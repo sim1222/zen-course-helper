@@ -38,7 +38,7 @@ export function SubjectCart({
 	setCart,
 }: {
 	subjects: Subject[];
-	setCart: (s: (g: Subject[]) => Subject[]) => void;
+	setCart: (cart: Subject[]) => void;
 }) {
 	return (
 		<Card className="h-[calc(100%-32px)]">

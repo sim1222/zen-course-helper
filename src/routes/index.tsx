@@ -32,6 +32,7 @@ import { getQuarterByFormula } from "@/lib/utils";
 import { useAttainmentsStore } from "@/stores/attainmentsStore";
 import { useSubjectsStore } from "@/stores/subjectsStore";
 import type { Subject } from "@/types/apiTypes";
+import { useCartStore } from "@/stores/cartStore";
 
 export const Route = createFileRoute("/")({
 	component: App,
@@ -41,10 +42,10 @@ function App() {
 	const [selectedCategory, setSelectedCategory] = useState<
 		(typeof subjectCategories)[number]["id"][]
 	>(subjectCategories.map((c) => c.id));
-	const [cart, setCart] = useState<Subject[]>([]);
 
 	const attainmentsStore = useAttainmentsStore();
 	const allSubjectsStore = useSubjectsStore();
+	const cartStore = useCartStore();
 
 	const now = useMemo(() => new Date(), []);
 	const year = useMemo(() => now.getFullYear(), [now]);
@@ -57,7 +58,10 @@ function App() {
 			<main className="flex flex-col items-center justify-center">
 				<div className="flex w-full h-[calc(100vh-3.5rem)] px-4 pt-4 gap-4">
 					<div className="w-135 shrink-0 flex flex-col gap-4">
-						<LimitStatus passed={attainmentsStore.Attainments} added={cart} />
+						<LimitStatus
+							passed={attainmentsStore.Attainments}
+							added={cartStore.Cart}
+						/>
 						<Card>
 							<CardContent>
 								<FieldGroup>
@@ -120,14 +124,14 @@ function App() {
 							category={selectedCategory}
 							year={year}
 							quarter={quarter}
-							cart={cart}
-							setCart={setCart}
+							cart={cartStore.Cart}
+							setCart={cartStore.setCart}
 							keyword={keyword}
 							attainments={attainmentsStore.Attainments}
 						/>
 					</div>
 					<div className="w-80 shrink-0">
-						<SubjectCart subjects={cart} setCart={setCart} />
+						<SubjectCart subjects={cartStore.Cart} setCart={cartStore.setCart} />
 					</div>
 				</div>
 			</main>

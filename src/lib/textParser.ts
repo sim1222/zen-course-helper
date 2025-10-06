@@ -7,6 +7,7 @@ export const CourseSchema = z.object({
 	grade: z.string().default(""),
 	isIncludeInGPA: z.boolean(),
 	teacher: z.string().default(""),
+	isCurrent: z.boolean() // 履修中フラグ
 });
 export type Course = z.infer<typeof CourseSchema>;
 
@@ -109,6 +110,13 @@ export function parseCoursesFromText(
 		}
 		if (sectionLabels.has(head)) continue;
 
+		// 履修中判定: 先頭が ※ なら履修中フラグを立てて除去
+		let isCurrent = false;
+		if (head === "※") {
+			isCurrent = true;
+			parts = parts.slice(1); // ※ を除去
+		}
+
 		// [name, credits, grade, gpaMark, teacher] の5列に合わせてパディング
 		const cols = [...parts, "", "", "", "", ""].slice(0, 5);
 		const [name, creditsRaw, grade, gpaMark, teacher] = cols;
@@ -133,6 +141,7 @@ export function parseCoursesFromText(
 			grade: grade || "",
 			isIncludeInGPA: gpaMarkToBool(gpaMark),
 			teacher: teacher || "",
+			isCurrent,
 		});
 	}
 

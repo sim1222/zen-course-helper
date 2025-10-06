@@ -47,7 +47,7 @@ export default function Header() {
 							インポート
 						</Button>
 					</DialogTrigger>
-					<DialogContent className="sm:max-w-4xl">
+					<DialogContent className="sm:max-w-4xl max-h-[95vh] overflow-auto">
 						<DialogHeader>
 							<DialogTitle>成績情報をインポート</DialogTitle>
 							<DialogDescription>
