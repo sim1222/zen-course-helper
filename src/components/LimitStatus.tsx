@@ -101,7 +101,9 @@ function ProgressBar(props: {
 			<h3>{props.title}</h3>
 			<div className="flex items-center gap-2">
 				<Progress
-					value={(props.value / props.max) * 100}
+					value={
+						Math.min(100, Math.floor((props.value / props.max) * 100))
+					}
 					className="w-full"
 					color={props.color}
 				/>
@@ -186,57 +188,62 @@ export default function LimitStatus(props: {
 			: props.passed.map((p) => p.subject).filter((e) => !!e);
 	}, [props.passed, props.added, withAdded]);
 
-	const [basicCount, kisoChartData, tenkai, tenkaiChartData, totalCount] =
-		useMemo(() => {
-			const p = mergedSubjects;
-			const countById = (
-				subjectCategoryId: (typeof subjectCategories)[number]["id"],
-				filterBasic: boolean = false,
-			) => {
-				return p
-					.filter((s) => s.subjectCategoryIds.includes(subjectCategoryId))
-					.filter((s) => (filterBasic ? s.numbering.startsWith("BSC") : true))
-					.reduce((a, c) => a + (parseInt(c.metadata.credit, 10) ?? 0), 0);
-			};
+	const [
+		basicCount,
+		kisoChartData,
+		tenkai,
+		tenkaiChartData,
+		gradZemi,
+		totalCount,
+	] = useMemo(() => {
+		const p = mergedSubjects;
+		const countById = (
+			subjectCategoryId: (typeof subjectCategories)[number]["id"],
+			filterBasic: boolean = false,
+		) => {
+			return p
+				.filter((s) => s.subjectCategoryIds.includes(subjectCategoryId))
+				.filter((s) => (filterBasic ? s.numbering.startsWith("BSC") : true))
+				.reduce((a, c) => a + (parseInt(c.metadata.credit, 10) ?? 0), 0);
+		};
 
-			const basicCount = countById("basic");
+		const basicCount = countById("basic");
 
-			const kisoChartData = [
-				{
-					applied_informatics: countById("applied_informatics", true),
-					mathematical_sciences: countById("mathematical_sciences", true),
-					culture_and_thoughts: countById("culture_and_thoughts", true),
-					society_and_networks: countById("society_and_networks", true),
-					economy_and_markets: countById("economy_and_markets", true),
-					multilingual_information_understanding: countById(
-						"multilingual_information_understanding",
-						true,
-					),
-				},
-			];
-			const tenkaiChartData = [
-				{
-					// 基盤リテラシー科目から、2.「基礎科目」の履修も合わせ８単位以上修得すること。
-					basic_literacy_subjects:
-						countById("applied_informatics") +
-						countById("mathematical_sciences"),
-					multilingual_information_understanding_subjects: countById(
-						"multilingual_information_understanding",
-					),
-					world_understanding_subjects:
-						countById("culture_and_thoughts") +
-						countById("society_and_networks") +
-						countById("economy_and_markets") +
-						countById("digital_industry"),
-					social_connection_subjects: Math.min(
-						10,
-						countById("social_connection"),
-					),
-				},
-			];
+		const kisoChartData = [
+			{
+				applied_informatics: countById("applied_informatics", true),
+				mathematical_sciences: countById("mathematical_sciences", true),
+				culture_and_thoughts: countById("culture_and_thoughts", true),
+				society_and_networks: countById("society_and_networks", true),
+				economy_and_markets: countById("economy_and_markets", true),
+				multilingual_information_understanding: countById(
+					"multilingual_information_understanding",
+					true,
+				),
+			},
+		];
+		const tenkaiChartData = [
+			{
+				// 基盤リテラシー科目から、2.「基礎科目」の履修も合わせ８単位以上修得すること。
+				basic_literacy_subjects:
+					countById("applied_informatics") + countById("mathematical_sciences"),
+				multilingual_information_understanding_subjects: countById(
+					"multilingual_information_understanding",
+				),
+				world_understanding_subjects:
+					countById("culture_and_thoughts") +
+					countById("society_and_networks") +
+					countById("economy_and_markets") +
+					countById("digital_industry"),
+				social_connection_subjects: Math.min(
+					10,
+					countById("social_connection"),
+				),
+			},
+		];
 
-			const tenkai = (() => {
-				/* 
+		const tenkai = (() => {
+			/* 
 			type SubjectCategoryType = {
 				label: string;
 				value: string;
@@ -333,57 +340,71 @@ export default function LimitStatus(props: {
 
 			*/
 
-				const tenkai = {
-					basic_literacy_subjects: {
-						credits:
-							countById("applied_informatics") +
-							countById("mathematical_sciences"),
-					},
-					multilingual_information_understanding_subjects: {
-						credits: countById("multilingual_information_understanding"),
-					},
-					world_understanding_subjects: {
-						credits:
-							countById("culture_and_thoughts") +
-							countById("society_and_networks") +
-							countById("economy_and_markets") +
-							countById("digital_industry"),
-						hasRequiredCredit: !!p.find(
-							// ①「デジタル産業」の「IT産業史」「マンガ産業史」「アニメ産業史」「日本のゲーム産業史」の中から、２単位以上修得すること。
-							(a) =>
-								[
-									"DIGI-1-B1-1030-001",
-									"DIGI-1-B1-1030-002",
-									"DIGI-1-B1-0204-003",
-									"DIGI-1-B1-0204-004",
-								].includes(a.numbering),
-						),
-					},
-					social_connection_subjects: {
-						// max 10
-						credits: Math.min(10, countById("social_connection")),
-						// if more then 10, write real
-						// if not, same as credit
-						realCredit: countById("social_connection"),
-					},
-				};
+			const tenkai = {
+				basic_literacy_subjects: {
+					credits:
+						countById("applied_informatics") +
+						countById("mathematical_sciences"),
+				},
+				multilingual_information_understanding_subjects: {
+					credits: countById("multilingual_information_understanding"),
+				},
+				world_understanding_subjects: {
+					credits:
+						countById("culture_and_thoughts") +
+						countById("society_and_networks") +
+						countById("economy_and_markets") +
+						countById("digital_industry"),
+					hasRequiredCredit: !!p.find(
+						// ①「デジタル産業」の「IT産業史」「マンガ産業史」「アニメ産業史」「日本のゲーム産業史」の中から、２単位以上修得すること。
+						(a) =>
+							[
+								"DIGI-1-B1-1030-001",
+								"DIGI-1-B1-1030-002",
+								"DIGI-1-B1-0204-003",
+								"DIGI-1-B1-0204-004",
+							].includes(a.numbering),
+					),
+				},
+				social_connection_subjects: {
+					// max 10
+					credits: Math.min(10, countById("social_connection")),
+					// if more then 10, write real
+					// if not, same as credit
+					realCredit: countById("social_connection"),
+				},
+			};
 
-				return tenkai;
-			})();
+			return tenkai;
+		})();
 
-			const totalCount =
-				p.reduce(
-					(acc, cur) => acc + (parseInt(cur.metadata.credit, 10) ?? 0),
-					0,
-				) -
-				(tenkai.social_connection_subjects.realCredit -
-					tenkai.social_connection_subjects.credits);
+		const gradZemi = (() => {
+			const credits = countById("graduation_project");
+			return {
+				credits,
+			};
+		})();
 
-			// const gradZemi = p.find()
-			// TODO
+		const totalCount =
+			p.reduce(
+				(acc, cur) => acc + (parseInt(cur.metadata.credit, 10) ?? 0),
+				0,
+			) -
+			(tenkai.social_connection_subjects.realCredit -
+				tenkai.social_connection_subjects.credits);
 
-			return [basicCount, kisoChartData, tenkai, tenkaiChartData, totalCount];
-		}, [mergedSubjects]);
+		// const gradZemi = p.find()
+		// TODO
+
+		return [
+			basicCount,
+			kisoChartData,
+			tenkai,
+			tenkaiChartData,
+			gradZemi,
+			totalCount,
+		];
+	}, [mergedSubjects]);
 
 	return (
 		<Card className={props.className}>
@@ -561,7 +582,7 @@ export default function LimitStatus(props: {
 											</BarChart>
 										</ChartContainer>
 										<Label className="w-6">
-											{Object.entries(kisoChartData[0]).reduce(
+											{Object.entries(tenkaiChartData[0]).reduce(
 												(a, c) => a + c[1],
 												0,
 											)}
@@ -622,18 +643,20 @@ export default function LimitStatus(props: {
 									max={10}
 									title="社会接続科目"
 									color={chartConfig.tenkai.social_connection_subjects.color}
-									checked={false}
+									checked={tenkai.social_connection_subjects.credits >= 10}
 									tooltip={"社会接続科目は10単位までしか卒業要件に含まれません"}
 								/>
-								{tenkai.social_connection_subjects.realCredit > 10 &&
-									"too many social"}
 							</div>
 						</AccordionContent>
 					</AccordionItem>
 				</Accordion>
 
 				<div className="pr-8">
-					<ProgressBar value={0} max={4} title="卒業プロジェクト科目" />
+					<ProgressBar
+						value={gradZemi.credits}
+						max={4}
+						title="卒業プロジェクト科目"
+					/>
 				</div>
 				<div className="pr-8 pt-4">
 					<ProgressBar value={totalCount} max={124} title="総単位数" />
