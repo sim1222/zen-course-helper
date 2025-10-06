@@ -65,11 +65,7 @@ export function SubjectCart({
 											<Card
 												className="py-0 gap-0 hover:brightness-80 active:brightness-50 transition-all duration-200 mb-2 cursor-pointer"
 												onClick={() => {
-													setCart((oldCart) =>
-														oldCart.filter(
-															(s) => s.numbering !== subject.numbering,
-														),
-													);
+													setCart(subjects.filter((s) => s.numbering !== subject.numbering));
 												}}
 											>
 												<div className="flex  rounded-t-sm">
@@ -107,11 +103,7 @@ export function SubjectCart({
 											<ContextMenuSeparator />
 											<ContextMenuItem
 												onSelect={() => {
-													setCart((oldCart) =>
-														oldCart.filter(
-															(s) => s.numbering !== subject.numbering,
-														),
-													);
+													setCart(subjects.filter((s) => s.numbering !== subject.numbering));
 												}}
 												className="text-red-600"
 											>
