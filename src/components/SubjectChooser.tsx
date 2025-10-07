@@ -79,7 +79,7 @@ export default function SubjectChooser({
 					)
 					.filter(
 						(s) =>
-							!attainments.find((a) => a.subject?.numbering === s.numbering),
+							!attainments.find((a) => a.subject?.numbering === s.numbering && a.credits !== null),
 					)
 					.filter((s) => !cart.find((c) => c.numbering === s.numbering))
 					.filter((s) => s.name.includes(keyword))
