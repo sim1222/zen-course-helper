@@ -61,7 +61,6 @@ export default function TranscriptParse({
 				onChange={(e) => setValue(e.target.value)}
 				onBlur={(e) => {
 					e.target.setSelectionRange(parsed.start ?? 0, parsed.start ?? 0 + 10);
-					console.log(parsed.start);
 				}}
 				placeholder="ここに成績照会の内容を貼り付けてください"
 				className="w-full h-24"

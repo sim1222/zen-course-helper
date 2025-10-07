@@ -54,10 +54,19 @@ import { Toggle } from "./ui/toggle";
 4 「卒業プロジェクト科目」 「プロジェクト実践」４単位を修得すること。
  */
 
-function CheckMarkLabel(props: { checked: boolean }) {
+function CheckMarkLabel({
+	checked,
+	...props
+}: { checked: boolean } & React.HTMLAttributes<HTMLSpanElement>) {
 	return (
-		<Label className={cn(props.checked ? "text-green-600" : "text-red-600")}>
-			{props.checked ? (
+		<Label
+			{...props}
+			className={cn([
+				checked ? "text-green-600" : "text-red-600",
+				props.className,
+			])}
+		>
+			{checked ? (
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					width="16"
@@ -111,8 +120,11 @@ function ProgressBar(props: {
 				{props.checked !== undefined &&
 					(props.tooltip !== undefined ? (
 						<HoverCard>
-							<HoverCardTrigger className="cursor-help">
-								<CheckMarkLabel checked={props.checked} />
+							<HoverCardTrigger asChild>
+								<CheckMarkLabel
+									checked={props.checked}
+									className="cursor-help"
+								/>
 							</HoverCardTrigger>
 							<HoverCardContent>{props.tooltip}</HoverCardContent>
 						</HoverCard>
@@ -176,7 +188,6 @@ export default function LimitStatus(props: {
 	added: Subject[];
 	className?: string;
 }) {
-	console.log(props.passed);
 	const [withAdded, setWithAdded] = useState(true);
 	const mergedSubjects = useMemo(() => {
 		return withAdded
@@ -415,7 +426,7 @@ export default function LimitStatus(props: {
 			<CardHeader className="flex justify-between items-center">
 				<CardDescription>
 					<HoverCard>
-						<HoverCardTrigger>
+						<HoverCardTrigger asChild>
 							<LinkToExternal href="https://img.zen-univ.jp/studentBook/sotugyouYouken.pdf">
 								卒業要件PDF
 							</LinkToExternal>

@@ -1,16 +1,18 @@
-export default function LinkToExternal(props: {
-	href: string;
-	children: React.ReactNode;
-	className?: string;
-}) {
+import { cn } from "@/lib/utils";
+
+export default function LinkToExternal({
+	className,
+	children,
+	...props
+}: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
 	return (
 		<a
-			href={props.href}
-			className={`text-blue-500 hover:underline ${props.className}`}
+			{...props}
+			className={cn([`text-blue-500 hover:underline`, className])}
 			target="_blank"
 			rel="noopener noreferrer"
 		>
-			{props.children}
+			{children}
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				width="16"
@@ -21,11 +23,11 @@ export default function LinkToExternal(props: {
 			>
 				<title>box-arrow-up-right</title>
 				<path
-					fill-rule="evenodd"
+					fillRule="evenodd"
 					d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"
 				/>
 				<path
-					fill-rule="evenodd"
+					fillRule="evenodd"
 					d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"
 				/>
 			</svg>
