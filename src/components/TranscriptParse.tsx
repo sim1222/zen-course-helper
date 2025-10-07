@@ -133,6 +133,7 @@ export default function TranscriptParse({
 				className="place-self-end"
 				onClick={() => {
 					attainmentsStore.setAttainments(attainments);
+					cartStore.clearCart();
 					cartStore.addSubjects(currentAttainments.filter((a) => a.subject !== null).map((a) => a.subject).filter((s): s is Subject => s !== null));
 					setDialogOpen(false);
 				}}

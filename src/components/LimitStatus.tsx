@@ -101,9 +101,7 @@ function ProgressBar(props: {
 			<h3>{props.title}</h3>
 			<div className="flex items-center gap-2">
 				<Progress
-					value={
-						Math.min(100, Math.floor((props.value / props.max) * 100))
-					}
+					value={Math.min(100, Math.floor((props.value / props.max) * 100))}
 					className="w-full"
 					color={props.color}
 				/>
@@ -178,14 +176,21 @@ export default function LimitStatus(props: {
 	added: Subject[];
 	className?: string;
 }) {
+	console.log(props.passed);
 	const [withAdded, setWithAdded] = useState(true);
 	const mergedSubjects = useMemo(() => {
 		return withAdded
 			? [
-					...props.passed.map((p) => p.subject).filter((e) => !!e),
+					...props.passed
+						.filter((p) => p.credits !== null)
+						.map((p) => p.subject)
+						.filter((e) => !!e),
 					...props.added,
 				]
-			: props.passed.map((p) => p.subject).filter((e) => !!e);
+			: props.passed
+					.filter((p) => p.credits !== null)
+					.map((p) => p.subject)
+					.filter((e) => !!e);
 	}, [props.passed, props.added, withAdded]);
 
 	const [
@@ -196,12 +201,11 @@ export default function LimitStatus(props: {
 		gradZemi,
 		totalCount,
 	] = useMemo(() => {
-		const p = mergedSubjects;
 		const countById = (
 			subjectCategoryId: (typeof subjectCategories)[number]["id"],
 			filterBasic: boolean = false,
 		) => {
-			return p
+			return mergedSubjects
 				.filter((s) => s.subjectCategoryIds.includes(subjectCategoryId))
 				.filter((s) => (filterBasic ? s.numbering.startsWith("BSC") : true))
 				.reduce((a, c) => a + (parseInt(c.metadata.credit, 10) ?? 0), 0);
@@ -355,7 +359,7 @@ export default function LimitStatus(props: {
 						countById("society_and_networks") +
 						countById("economy_and_markets") +
 						countById("digital_industry"),
-					hasRequiredCredit: !!p.find(
+					hasRequiredCredit: !!mergedSubjects.find(
 						// ①「デジタル産業」の「IT産業史」「マンガ産業史」「アニメ産業史」「日本のゲーム産業史」の中から、２単位以上修得すること。
 						(a) =>
 							[
@@ -386,7 +390,7 @@ export default function LimitStatus(props: {
 		})();
 
 		const totalCount =
-			p.reduce(
+			mergedSubjects.reduce(
 				(acc, cur) => acc + (parseInt(cur.metadata.credit, 10) ?? 0),
 				0,
 			) -
