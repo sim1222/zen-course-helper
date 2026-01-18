@@ -28,7 +28,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { searchSubjects } from "@/lib/apiClient";
 import { Quarter, subjectCategories } from "@/lib/syllabusConsts";
-import { getQuarterByFormula } from "@/lib/utils";
+import { getAcademicYearByFormula, getQuarterByFormula } from "@/lib/utils";
 import { useAttainmentsStore } from "@/stores/attainmentsStore";
 import { useSubjectsStore } from "@/stores/subjectsStore";
 import type { Subject } from "@/types/apiTypes";
@@ -48,7 +48,7 @@ function App() {
 	const cartStore = useCartStore();
 
 	const now = useMemo(() => new Date(), []);
-	const year = useMemo(() => now.getFullYear(), [now]);
+	const year = useMemo(() => getAcademicYearByFormula(now), [now]);
 	const quarter = useMemo(() => getQuarterByFormula(now), [now]);
 
 	const [keyword, setKeyword] = useState("");

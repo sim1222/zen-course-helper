@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getQuarterByFormula } from "@/lib/utils";
+import { getAcademicYearByFormula, getQuarterByFormula } from "@/lib/utils";
 import { useAttainmentsStore } from "@/stores/attainmentsStore";
 import seisekiImage from "../images/seiseki.png";
 import image from "../images/zenportal.png";
@@ -16,11 +16,12 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "./ui/dialog";
+import { useMemo } from "react";
 
 export default function Header() {
-	const now = new Date();
-	const year = now.getFullYear();
-	const quarter = getQuarterByFormula(now);
+	const now = useMemo(() => new Date(), []);
+	const year = useMemo(() => getAcademicYearByFormula(now), [now]);
+	const quarter = useMemo(() => getQuarterByFormula(now), [now]);
 
 	const attainmentsStore = useAttainmentsStore();
 

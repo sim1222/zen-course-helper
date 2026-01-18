@@ -15,7 +15,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Quarter, type subjectCategories } from "@/lib/syllabusConsts";
-import { syllabusUrl } from "@/lib/utils";
+import { parseQuarter, syllabusUrl } from "@/lib/utils";
 import type { Attainment } from "@/stores/attainmentsStore";
 import type { Subject } from "@/types/apiTypes";
 import SubjectCard from "./SubjectCard";
@@ -51,12 +51,6 @@ export default function SubjectChooser({
 	const [filterThisQuarter, setFilterThisQuarter] = useState(true);
 	const [compactView, setCompactView] = useState(false);
 
-	const parsedQuarter = useMemo(() => {
-		return Object.entries(Quarter)
-			.filter((q) => q[0].includes(quarter.toString()))
-			.map((e) => e[1]) as (typeof Quarter)[keyof typeof Quarter][];
-	}, [quarter]);
-
 	const filterdSubjects = useMemo(() => {
 		return category
 			? subjects
@@ -72,14 +66,15 @@ export default function SubjectChooser({
 						(s) =>
 							!filterThisQuarter ||
 							s.metadata.quarters.some((e) =>
-								parsedQuarter.includes(
-									e as (typeof Quarter)[keyof typeof Quarter],
-								),
+								parseQuarter(e)?.includes(quarter),
 							),
 					)
 					.filter(
 						(s) =>
-							!attainments.find((a) => a.subject?.numbering === s.numbering && a.credits !== null),
+							!attainments.find(
+								(a) =>
+									a.subject?.numbering === s.numbering && a.credits !== null,
+							),
 					)
 					.filter((s) => !cart.find((c) => c.numbering === s.numbering))
 					.filter((s) => s.name.includes(keyword))
@@ -88,8 +83,8 @@ export default function SubjectChooser({
 		category,
 		subjects,
 		attainments,
-		parsedQuarter,
 		year,
+		quarter,
 		cart,
 		keyword,
 		filterThisQuarter,
@@ -103,9 +98,9 @@ export default function SubjectChooser({
 					</div>
 					<div className="text-center">
 						<CardTitle>科目検索</CardTitle>
-						<CardDescription>
-							{filterThisQuarter ? parsedQuarter.join(", ") : "全期"}{" "}
-							{filterdSubjects.length}件
+						<CardDescription className="flex gap-2 justify-between w-32">
+							<span>{filterThisQuarter ? `${year}年度 ${quarter}Q` : "全期"}</span>
+							<span>{filterdSubjects.length}件</span>
 						</CardDescription>
 					</div>
 					<div className="flex-1 flex justify-end items-center">

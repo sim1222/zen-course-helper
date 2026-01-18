@@ -1,4 +1,4 @@
-import { syllabusUrl } from "@/lib/utils";
+import { cn, parseQuarter, syllabusUrl } from "@/lib/utils";
 import type { Subject } from "@/types/apiTypes";
 import FacultyBadge from "./FacultyBadge";
 import LinkToExternal from "./LinkToExternal";
@@ -11,12 +11,26 @@ import {
 	CardHeader,
 	CardTitle,
 } from "./ui/card";
+import { Separator } from "./ui/separator";
+import { parseCourseCode } from "@/lib/numberingParser";
+import { useMemo } from "react";
+import { QuarterIndicator } from "./QuarterIndicator";
+import { BsClock, BsMortarboard, BsCalendarEvent } from "react-icons/bs";
+import { FieldColors } from "@/lib/colors";
 
 export default function SubjectCard(props: {
 	subject: Subject;
 	className?: string;
 }) {
 	const { subject } = props;
+	const parsedNumbering = useMemo(() => {
+		return parseCourseCode(subject.numbering);
+	}, [subject.numbering]);
+	const parsedQuarters = useMemo(() => {
+		const quarters = parseQuarter(subject.metadata.quarters);
+		return quarters ? quarters : [];
+	}, [subject.metadata.quarters]);
+
 	return (
 		<Card className={props.className}>
 			<CardHeader className="flex">
@@ -28,18 +42,36 @@ export default function SubjectCard(props: {
 					/>
 				</div>
 				<div className="text-start basis-2/3 grow">
-					<CardTitle className="text-lg text-blue-900">
+					<CardTitle className="text-lg text-blue-900 flex items-center gap-1">
+						<span
+							className={cn(
+								"px-1 py-0.5 rounded text-sm font-medium",
+								FieldColors[parsedNumbering.field],
+							)}
+						>
+							{parsedNumbering.labels.field}
+						</span>
 						{subject.name}
 					</CardTitle>
 					<CardDescription className="line-clamp-3">
 						{subject.description}
 					</CardDescription>
 					<div className="mt-2 gap-1 flex">
-						<span className="">
-							{subject.numbering.startsWith("BSC") ? "基礎" : "展開"}
-						</span>
-						<span>{subject.metadata.credit}</span>
-						<span>{subject.metadata.quarters.join(", ")}</span>
+						<div className="flex items-center gap-1">
+							<BsMortarboard className="text-gray-500" />
+							<span>{subject.metadata.credit}</span>
+						</div>
+						<Separator orientation="vertical" className="h-full" />
+						<div className="flex items-center gap-1">
+							<BsClock className="text-gray-500" />
+							<QuarterIndicator values={new Set(parsedQuarters)} />
+						</div>
+						<Separator orientation="vertical" className="h-full" />
+						<div className="flex items-center gap-1">
+							<BsCalendarEvent className="text-gray-500" />
+							<span>{subject.openingYear}年度</span>
+						</div>
+						<Separator orientation="vertical" className="h-full" />
 						<LinkToExternal href={syllabusUrl(subject)}>
 							シラバスを開く
 						</LinkToExternal>

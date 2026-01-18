@@ -1,4 +1,9 @@
-import type { subjectCategories } from "@/lib/syllabusConsts";
+import type {
+	Quarter,
+	searchOptions,
+	subjectCategories,
+} from "@/lib/syllabusConsts";
+import type { ValueOf } from "./utilTypes";
 
 export interface SearchResponse {
 	totalCount: number;
@@ -48,7 +53,7 @@ export interface Tag {
 
 export interface Metadata {
 	enrollmentGrade: string; // 1年次
-	teachingMethod: "オンデマンド科目" | "ライブ映像科目" | "演習科目" | "ゼミ";
+	teachingMethod: (typeof searchOptions.teachingMethodOptions)[number]["label"];
 	prerequisiteSubjects: PrerequisiteSubject[];
 	prerequisiteRecommendedSubjects: PrerequisiteRecommendedSubject[];
 	nextRecommendedSubjects: NextRecommendedSubject[];
@@ -56,7 +61,7 @@ export interface Metadata {
 	evaluationSystem: string;
 	objective: string;
 	credit: string;
-	quarters: string[];
+	quarters: ValueOf<typeof Quarter>[];
 	specialNotes: string;
 	textBooks: TextBook[];
 	referenceBooks: ReferenceBook[];
