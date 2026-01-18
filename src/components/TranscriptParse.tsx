@@ -23,7 +23,7 @@ function convertToAttainment(
 	courses: ReturnType<typeof parseCoursesFromText>["courses"],
 ): Attainment[] {
 	const attainments = courses.map((course) => {
-		const subject = subjects.find((s) => s.name === course.name)
+		const subject = subjects.find((s) => s.name === course.name);
 		return {
 			subject: subject ?? null,
 			...course,
@@ -48,10 +48,16 @@ export default function TranscriptParse({
 	}, [value]);
 
 	const attainments = useMemo(() => {
-		return convertToAttainment(subjectsStore.subjects, parsed.courses.filter(c => !c.isCurrent));
+		return convertToAttainment(
+			subjectsStore.subjects,
+			parsed.courses.filter((c) => !c.isCurrent),
+		);
 	}, [parsed, subjectsStore.subjects]);
 	const currentAttainments = useMemo(() => {
-		return convertToAttainment(subjectsStore.subjects, parsed.courses.filter(c => c.isCurrent));
+		return convertToAttainment(
+			subjectsStore.subjects,
+			parsed.courses.filter((c) => c.isCurrent),
+		);
 	}, [parsed, subjectsStore.subjects]);
 
 	return (
@@ -133,7 +139,12 @@ export default function TranscriptParse({
 				onClick={() => {
 					attainmentsStore.setAttainments(attainments);
 					cartStore.clearCart();
-					cartStore.addSubjects(currentAttainments.filter((a) => a.subject !== null).map((a) => a.subject).filter((s): s is Subject => s !== null));
+					cartStore.addSubjects(
+						currentAttainments
+							.filter((a) => a.subject !== null)
+							.map((a) => a.subject)
+							.filter((s): s is Subject => s !== null),
+					);
 					setDialogOpen(false);
 				}}
 				disabled={

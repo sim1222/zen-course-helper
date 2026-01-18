@@ -99,7 +99,9 @@ export default function SubjectChooser({
 					<div className="text-center">
 						<CardTitle>科目検索</CardTitle>
 						<CardDescription className="flex gap-2 justify-between w-32">
-							<span>{filterThisQuarter ? `${year}年度 ${quarter}Q` : "全期"}</span>
+							<span>
+								{filterThisQuarter ? `${year}年度 ${quarter}Q` : "全期"}
+							</span>
 							<span>{filterdSubjects.length}件</span>
 						</CardDescription>
 					</div>

@@ -131,7 +131,10 @@ function App() {
 						/>
 					</div>
 					<div className="w-80 shrink-0">
-						<SubjectCart subjects={cartStore.Cart} setCart={cartStore.setCart} />
+						<SubjectCart
+							subjects={cartStore.Cart}
+							setCart={cartStore.setCart}
+						/>
 					</div>
 				</div>
 			</main>

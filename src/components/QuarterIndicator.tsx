@@ -8,7 +8,6 @@ function QuarterIndicator({
 	className?: string;
 	values: Set<number>;
 }) {
-
 	return (
 		<div
 			className={cn(
@@ -22,9 +21,7 @@ function QuarterIndicator({
 					key={q}
 					className={cn(
 						"flex items-center justify-center w-5 h-5 text-[10px] font-bold",
-						values.has(q)
-							? "bg-blue-800 text-white"
-							: "bg-white text-gray-300",
+						values.has(q) ? "bg-blue-800 text-white" : "bg-white text-gray-300",
 					)}
 				>
 					{q}

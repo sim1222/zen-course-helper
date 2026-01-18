@@ -7,7 +7,7 @@ export const CourseSchema = z.object({
 	grade: z.string().default(""),
 	isIncludeInGPA: z.boolean(),
 	teacher: z.string().default(""),
-	isCurrent: z.boolean() // 履修中フラグ
+	isCurrent: z.boolean(), // 履修中フラグ
 });
 export type Course = z.infer<typeof CourseSchema>;
 
