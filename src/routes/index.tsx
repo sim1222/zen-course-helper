@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import LimitStatus from "@/components/LimitStatus";
 import { SubjectCart } from "@/components/SubjectCart";
 import SubjectChooser from "@/components/SubjectChooser";
@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Field,
-	FieldDescription,
 	FieldGroup,
 	FieldLabel,
 	FieldLegend,
@@ -15,7 +14,7 @@ import {
 	FieldTitle,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Quarter, subjectCategories } from "@/lib/syllabusConsts";
+import { subjectCategories } from "@/lib/syllabusConsts";
 import { useAttainmentsStore } from "@/stores/attainmentsStore";
 import { useSubjectsStore } from "@/stores/subjectsStore";
 import { useCartStore } from "@/stores/cartStore";
@@ -36,7 +35,7 @@ function App() {
 	const currentQuarterStore = useCurrentQuarterStore();
 
 	const year = currentQuarterStore.Year;
-	const quarter = currentQuarterStore.Quarter;
+	const quarter = currentQuarterStore.Quarter as 1 | 2 | 3 | 4;
 
 	const [keyword, setKeyword] = useState("");
 

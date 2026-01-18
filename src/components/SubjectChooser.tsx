@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -14,7 +15,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Quarter, type subjectCategories } from "@/lib/syllabusConsts";
+import { type subjectCategories } from "@/lib/syllabusConsts";
 import { parseQuarter, syllabusUrl } from "@/lib/utils";
 import type { Attainment } from "@/stores/attainmentsStore";
 import type { Subject } from "@/types/apiTypes";
@@ -50,6 +51,23 @@ export default function SubjectChooser({
 }) {
 	const [filterThisQuarter, setFilterThisQuarter] = useState(true);
 	const [compactView, setCompactView] = useState(false);
+	const parentRef = useRef<HTMLDivElement>(null);
+	const [containerWidth, setContainerWidth] = useState(0);
+
+	useEffect(() => {
+		if (!parentRef.current) return;
+		const resizeObserver = new ResizeObserver((entries) => {
+			for (const entry of entries) {
+				setContainerWidth(entry.contentRect.width);
+			}
+		});
+
+		resizeObserver.observe(parentRef.current);
+
+		return () => {
+			resizeObserver.disconnect();
+		};
+	}, []);
 
 	const filterdSubjects = useMemo(() => {
 		return category
@@ -89,6 +107,20 @@ export default function SubjectChooser({
 		keyword,
 		filterThisQuarter,
 	]);
+
+	const columnWidth = 224; // w-56
+	const gap = 16; // gap-4
+	const columns = compactView
+		? Math.max(1, Math.floor((containerWidth + gap) / (columnWidth + gap)))
+		: 1;
+
+	const rowVirtualizer = useVirtualizer({
+		count: Math.ceil(filterdSubjects.length / columns),
+		getScrollElement: () => parentRef.current,
+		estimateSize: () => (compactView ? 140 : 200), // Adjusted estimation
+		overscan: 5,
+	});
+
 	return (
 		<Card className="h-[calc(100%-32px)]">
 			<CardHeader>
@@ -120,116 +152,170 @@ export default function SubjectChooser({
 					</div>
 				</div>
 			</CardHeader>
-			<CardContent className="h-full p-0 pb-16 overflow-auto">
-				<div className="flex flex-wrap gap-4 p-4">
-					{subjects.length === 0 &&
-						Array.from({ length: 10 }).map((_, i) => (
+			<CardContent
+				ref={parentRef}
+				className="h-full p-4 overflow-auto scroll-contain"
+			>
+				{subjects.length === 0 ? (
+					<div className="flex flex-wrap gap-4">
+						{Array.from({ length: 10 }).map((_, i) => (
 							<Skeleton className="w-full h-64 rounded-2xl" key={i} />
 						))}
-					{compactView
-						? filterdSubjects.map((subject) => (
-								<motion.div
-									key={subject.numbering}
-									layoutId={subject.numbering}
-									layoutScroll
-								>
-									<Tooltip>
-										<TooltipTrigger>
-											<ContextMenu>
-												<ContextMenuTrigger>
-													<button
-														type="button"
-														key={subject.numbering}
-														className="rounded-2xl overflow-hidden hover:scale-105 hover:shadow-blue-300/50 hover:shadow-md transition-all duration-200"
-														onClick={() => {
-															!cart.find(
-																(c) => c.numbering === subject.numbering,
-															) && setCart([subject, ...cart]);
-														}}
-													>
-														<motion.img
-															layout
-															src={subject.thumbnailUrl}
-															alt={subject.name}
-															className="w-56 h-auto"
-														/>
-													</button>
-												</ContextMenuTrigger>
-												<ContextMenuContent>
-													<ContextMenuLabel>
-														{subject.name} ({subject.numbering})
-													</ContextMenuLabel>
-													<ContextMenuSeparator />
-													<ContextMenuItem
-														onSelect={() => {
-															!cart.find(
-																(c) => c.numbering === subject.numbering,
-															) && setCart([subject, ...cart]);
-														}}
-													>
-														追加
-														<ContextMenuShortcut>Enter</ContextMenuShortcut>
-													</ContextMenuItem>
-													<ContextMenuItem
-														onSelect={() => {
-															window.open(syllabusUrl(subject), "_blank");
-														}}
-													>
-														シラバスを開く
-														<ContextMenuShortcut>Ctrl+Open</ContextMenuShortcut>
-													</ContextMenuItem>
-												</ContextMenuContent>
-											</ContextMenu>
-										</TooltipTrigger>
-										<TooltipContent className="max-w-xs">
-											{subject.name} をカートに追加
-										</TooltipContent>
-									</Tooltip>
-								</motion.div>
-							))
-						: filterdSubjects.map((subject) => (
-								<motion.div
-									key={subject.numbering}
-									layoutId={subject.numbering}
-									className="flex flex-col sm:flex-row gap-2 w-full hover:shadow-blue-300/50 hover:shadow-md rounded-2xl transition-shadow duration-200 cursor-pointer"
-									onClick={() => {
-										!cart.find((c) => c.numbering === subject.numbering) &&
-											setCart([subject, ...cart]);
+					</div>
+				) : (
+					<div
+						style={{
+							height: `${rowVirtualizer.getTotalSize()}px`,
+							width: "100%",
+							position: "relative",
+						}}
+					>
+						{rowVirtualizer.getVirtualItems().map((virtualRow) => {
+							const rowStartIndex = virtualRow.index * columns;
+							const rowItems = filterdSubjects.slice(
+								rowStartIndex,
+								rowStartIndex + columns,
+							);
+
+							return (
+								<div
+									key={virtualRow.key}
+									data-index={virtualRow.index}
+									ref={rowVirtualizer.measureElement}
+									style={{
+										position: "absolute",
+										top: 0,
+										left: 0,
+										width: "100%",
+										transform: `translateY(${virtualRow.start}px)`,
 									}}
-									layoutScroll
+									className="flex gap-4"
 								>
-									<ContextMenu>
-										<ContextMenuTrigger className="flex-1 min-w-0">
-											<SubjectCard subject={subject} key={subject.numbering} />
-										</ContextMenuTrigger>
-										<ContextMenuContent>
-											<ContextMenuLabel>
-												{subject.name} ({subject.numbering})
-											</ContextMenuLabel>
-											<ContextMenuSeparator />
-											<ContextMenuItem
-												onSelect={() => {
+									{rowItems.map((subject) => {
+										if (compactView) {
+											return (
+												<motion.div
+													key={subject.numbering}
+													layoutId={subject.numbering}
+													layoutScroll
+													style={{ width: columnWidth }}
+												>
+													<Tooltip>
+														<TooltipTrigger className="w-full">
+															<ContextMenu>
+																<ContextMenuTrigger>
+																	<button
+																		type="button"
+																		className="w-full rounded-2xl overflow-hidden hover:scale-105 hover:shadow-blue-300/50 hover:shadow-md transition-all duration-200"
+																		onClick={() => {
+																			!cart.find(
+																				(c) =>
+																					c.numbering === subject.numbering,
+																			) && setCart([subject, ...cart]);
+																		}}
+																	>
+																		<motion.img
+																			layout
+																			src={subject.thumbnailUrl}
+																			alt={subject.name}
+																			className="w-full h-auto object-cover aspect-[calc(1200/675)]"
+																		/>
+																	</button>
+																</ContextMenuTrigger>
+																<ContextMenuContent>
+																	<ContextMenuLabel>
+																		{subject.name} ({subject.numbering})
+																	</ContextMenuLabel>
+																	<ContextMenuSeparator />
+																	<ContextMenuItem
+																		onSelect={() => {
+																			!cart.find(
+																				(c) =>
+																					c.numbering === subject.numbering,
+																			) && setCart([subject, ...cart]);
+																		}}
+																	>
+																		追加
+																		<ContextMenuShortcut>
+																			Enter
+																		</ContextMenuShortcut>
+																	</ContextMenuItem>
+																	<ContextMenuItem
+																		onSelect={() => {
+																			window.open(
+																				syllabusUrl(subject),
+																				"_blank",
+																			);
+																		}}
+																	>
+																		シラバスを開く
+																		<ContextMenuShortcut>
+																			Ctrl+Open
+																		</ContextMenuShortcut>
+																	</ContextMenuItem>
+																</ContextMenuContent>
+															</ContextMenu>
+														</TooltipTrigger>
+														<TooltipContent className="max-w-xs">
+															{subject.name} をカートに追加
+														</TooltipContent>
+													</Tooltip>
+												</motion.div>
+											);
+										}
+
+										// Normal View
+										return (
+											<motion.div
+												key={subject.numbering}
+												layoutId={subject.numbering}
+												layoutScroll
+												className="flex flex-col sm:flex-row gap-2 w-full hover:shadow-blue-300/50 hover:shadow-md rounded-2xl transition-shadow duration-200 cursor-pointer mb-4"
+												onClick={() => {
 													!cart.find(
 														(c) => c.numbering === subject.numbering,
 													) && setCart([subject, ...cart]);
 												}}
 											>
-												追加
-												<ContextMenuShortcut>Enter</ContextMenuShortcut>
-											</ContextMenuItem>
-											<ContextMenuItem
-												onSelect={() => {
-													window.open(syllabusUrl(subject), "_blank");
-												}}
-											>
-												シラバスを開く
-												<ContextMenuShortcut>Ctrl+Open</ContextMenuShortcut>
-											</ContextMenuItem>
-										</ContextMenuContent>
-									</ContextMenu>
-								</motion.div>
-							))}
-				</div>
+												<ContextMenu>
+													<ContextMenuTrigger className="flex-1 min-w-0">
+														<SubjectCard subject={subject} />
+													</ContextMenuTrigger>
+													<ContextMenuContent>
+														<ContextMenuLabel>
+															{subject.name} ({subject.numbering})
+														</ContextMenuLabel>
+														<ContextMenuSeparator />
+														<ContextMenuItem
+															onSelect={() => {
+																!cart.find(
+																	(c) => c.numbering === subject.numbering,
+																) && setCart([subject, ...cart]);
+															}}
+														>
+															追加
+															<ContextMenuShortcut>Enter</ContextMenuShortcut>
+														</ContextMenuItem>
+														<ContextMenuItem
+															onSelect={() => {
+																window.open(syllabusUrl(subject), "_blank");
+															}}
+														>
+															シラバスを開く
+															<ContextMenuShortcut>
+																Ctrl+Open
+															</ContextMenuShortcut>
+														</ContextMenuItem>
+													</ContextMenuContent>
+												</ContextMenu>
+											</motion.div>
+										);
+									})}
+								</div>
+							);
+						})}
+					</div>
+				)}
 				{subjects.length === 0 && "No Subjects! ;)"}
 			</CardContent>
 		</Card>
