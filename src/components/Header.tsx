@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { getAcademicYearByFormula, getQuarterByFormula } from "@/lib/utils";
+import { useEffect, useMemo, useState } from "react";
 import { useAttainmentsStore } from "@/stores/attainmentsStore";
 import seisekiImage from "../images/seiseki.png";
 import image from "../images/zenportal.png";
@@ -16,14 +15,26 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "./ui/dialog";
-import { useMemo } from "react";
+import { useCurrentQuarterStore } from "@/stores/currentQuarterStore";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { useSubjectsStore } from "@/stores/subjectsStore";
+import type { Quarter } from "@/lib/numberingParser";
+import { cn, getAcademicYearByFormula, getQuarterByFormula } from "@/lib/utils";
 
 export default function Header() {
-	const now = useMemo(() => new Date(), []);
-	const year = useMemo(() => getAcademicYearByFormula(now), [now]);
-	const quarter = useMemo(() => getQuarterByFormula(now), [now]);
-
 	const attainmentsStore = useAttainmentsStore();
+	const currentQuarterStore = useCurrentQuarterStore();
+
+	const year = currentQuarterStore.Year;
+	const quarter = currentQuarterStore.Quarter;
 
 	const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -38,8 +49,9 @@ export default function Header() {
 					<Link to="/">ZEN大学 履修登録ヘルパー by sim1222</Link>
 				</div>
 				<FetchAllSubject />
-				<div>
-					{year}年度 {quarter}Q
+				<div className="flex gap-2">
+					<YearSelector />
+					<QuarterSelector />
 				</div>
 				<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
 					<DialogTrigger asChild>
@@ -103,5 +115,86 @@ export default function Header() {
 				</LinkToExternal>
 			</div>
 		</header>
+	);
+}
+
+function YearSelector() {
+	const currentQuarterStore = useCurrentQuarterStore();
+	const subjectsStore = useSubjectsStore();
+
+	const selectableYears = useMemo(() => {
+		const years = new Set<number>();
+		subjectsStore.subjects.forEach((subject) => {
+			years.add(parseInt(subject.openingYear));
+		});
+		return Array.from(years).sort((a, b) => a - b);
+	}, [subjectsStore.subjects]);
+
+	const now = new Date();
+
+	const currentAcademicYear = useMemo(() => {
+		return getAcademicYearByFormula(now);
+	}, [now]);
+
+	const year = currentQuarterStore.Year;
+
+	return (
+		<Select
+			value={year.toString()}
+			onValueChange={(value) => {
+				currentQuarterStore.setYear(parseInt(value));
+			}}
+		>
+			<SelectTrigger className="w-fit">
+				<SelectValue />
+			</SelectTrigger>
+			<SelectContent className="min-w-min">
+				{selectableYears.map((year) => (
+					<SelectItem
+						key={year}
+						value={year.toString()}
+						className={cn(year === currentAcademicYear ? "underline" : "")}
+					>
+						{year}年度
+					</SelectItem>
+				))}
+			</SelectContent>
+		</Select>
+	);
+}
+
+function QuarterSelector() {
+	const currentQuarterStore = useCurrentQuarterStore();
+
+	const now = new Date();
+
+	const current = useMemo(() => {
+		return getQuarterByFormula(now);
+	}, [now]);
+
+	const quarter = currentQuarterStore.Quarter;
+
+	return (
+		<Select
+			value={quarter.toString()}
+			onValueChange={(value) => {
+				currentQuarterStore.setQuarter(parseInt(value) as Quarter);
+			}}
+		>
+			<SelectTrigger className="w-fit">
+				<SelectValue />
+			</SelectTrigger>
+			<SelectContent className="min-w-min">
+				{([1, 2, 3, 4] as Quarter[]).map((q) => (
+					<SelectItem
+						key={q}
+						value={q.toString()}
+						className={cn(q === current ? "underline" : "")}
+					>
+						{q}Q
+					</SelectItem>
+				))}
+			</SelectContent>
+		</Select>
 	);
 }

@@ -1,21 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import LimitStatus from "@/components/LimitStatus";
-import SubjectCard from "@/components/SubjectCard";
 import { SubjectCart } from "@/components/SubjectCart";
 import SubjectChooser from "@/components/SubjectChooser";
-import TranscriptParse from "@/components/TranscriptParse";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
 import {
 	Field,
 	FieldDescription,
@@ -26,13 +15,11 @@ import {
 	FieldTitle,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { searchSubjects } from "@/lib/apiClient";
 import { Quarter, subjectCategories } from "@/lib/syllabusConsts";
-import { getAcademicYearByFormula, getQuarterByFormula } from "@/lib/utils";
 import { useAttainmentsStore } from "@/stores/attainmentsStore";
 import { useSubjectsStore } from "@/stores/subjectsStore";
-import type { Subject } from "@/types/apiTypes";
 import { useCartStore } from "@/stores/cartStore";
+import { useCurrentQuarterStore } from "@/stores/currentQuarterStore";
 
 export const Route = createFileRoute("/")({
 	component: App,
@@ -46,10 +33,10 @@ function App() {
 	const attainmentsStore = useAttainmentsStore();
 	const allSubjectsStore = useSubjectsStore();
 	const cartStore = useCartStore();
+	const currentQuarterStore = useCurrentQuarterStore();
 
-	const now = useMemo(() => new Date(), []);
-	const year = useMemo(() => getAcademicYearByFormula(now), [now]);
-	const quarter = useMemo(() => getQuarterByFormula(now), [now]);
+	const year = currentQuarterStore.Year;
+	const quarter = currentQuarterStore.Quarter;
 
 	const [keyword, setKeyword] = useState("");
 
