@@ -166,9 +166,9 @@ export const Quarter = {
 } as const satisfies Record<string, string>;
 
 export const TeachingMethod = {
-	"on-demand": "オンデマンド",
-	"live-video": "ライブ映像",
-	exercise: "演習",
+	"on-demand": "オンデマンド科目",
+	"live-video": "ライブ映像科目",
+	exercise: "演習科目",
 	seminar: "ゼミ",
 } as const satisfies Record<string, string>;
 

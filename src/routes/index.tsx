@@ -14,11 +14,11 @@ import {
 	FieldTitle,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { subjectCategories } from "@/lib/syllabusConsts";
+import { subjectCategories, TeachingMethod } from "@/lib/syllabusConsts";
 import { useAttainmentsStore } from "@/stores/attainmentsStore";
-import { useSubjectsStore } from "@/stores/subjectsStore";
 import { useCartStore } from "@/stores/cartStore";
 import { useCurrentQuarterStore } from "@/stores/currentQuarterStore";
+import { useSubjectsStore } from "@/stores/subjectsStore";
 
 export const Route = createFileRoute("/")({
 	component: App,
@@ -38,6 +38,9 @@ function App() {
 	const quarter = currentQuarterStore.Quarter as 1 | 2 | 3 | 4;
 
 	const [keyword, setKeyword] = useState("");
+	const [teachingMethod, setTeachingMethod] = useState<
+		(keyof typeof TeachingMethod)[]
+	>(Object.keys(TeachingMethod) as (keyof typeof TeachingMethod)[]);
 
 	return (
 		<div className="text-center">
@@ -58,11 +61,11 @@ function App() {
 												<FieldLabel
 													htmlFor={option.id}
 													key={option.id}
-													className="!w-fit"
+													className="w-fit!"
 												>
 													<Field
 														orientation="horizontal"
-														className="gap-1.5 overflow-hidden !px-3 !py-1.5 transition-all duration-100 ease-linear group-has-data-[state=checked]/field-label:!px-2"
+														className="gap-1.5 overflow-hidden px-3! py-1.5! transition-all duration-100 ease-linear group-has-data-[state=checked]/field-label:px-2!"
 													>
 														<Checkbox
 															value={option.id}
@@ -83,6 +86,51 @@ function App() {
 															className="-ml-6 -translate-x-1 rounded-full transition-all duration-100 ease-linear data-[state=checked]:ml-0 data-[state=checked]:translate-x-0"
 														/>
 														<FieldTitle>{option.name}</FieldTitle>
+													</Field>
+												</FieldLabel>
+											))}
+										</FieldGroup>
+									</FieldSet>
+									<FieldSet>
+										<FieldLegend>授業形態</FieldLegend>
+										<FieldGroup className="flex flex-row flex-wrap gap-2 [--radius:9999rem]">
+											{Object.keys(TeachingMethod).map((mode) => (
+												<FieldLabel
+													htmlFor={mode}
+													key={mode}
+													className="w-fit!"
+												>
+													<Field
+														orientation="horizontal"
+														className="gap-1.5 overflow-hidden px-3! py-1.5! transition-all duration-100 ease-linear group-has-data-[state=checked]/field-label:px-2!"
+													>
+														<Checkbox
+															value={mode}
+															id={mode}
+															onCheckedChange={(checked) => {
+																if (checked) {
+																	setTeachingMethod((old) => [
+																		...old,
+																		mode as keyof typeof TeachingMethod,
+																	]);
+																} else {
+																	setTeachingMethod((old) =>
+																		old.filter((c) => c !== mode),
+																	);
+																}
+															}}
+															checked={teachingMethod.includes(
+																mode as keyof typeof TeachingMethod,
+															)}
+															className="-ml-6 -translate-x-1 rounded-full transition-all duration-100 ease-linear data-[state=checked]:ml-0 data-[state=checked]:translate-x-0"
+														/>
+														<FieldTitle>
+															{
+																TeachingMethod[
+																	mode as keyof typeof TeachingMethod
+																]
+															}
+														</FieldTitle>
 													</Field>
 												</FieldLabel>
 											))}
@@ -114,6 +162,7 @@ function App() {
 							setCart={cartStore.setCart}
 							keyword={keyword}
 							attainments={attainmentsStore.Attainments}
+							teachingMethod={teachingMethod}
 						/>
 					</div>
 					<div className="w-80 shrink-0">

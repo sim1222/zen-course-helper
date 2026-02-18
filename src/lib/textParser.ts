@@ -87,7 +87,7 @@ export function parseCoursesFromText(
 	let currentIndex = 0;
 	let startIndex = 0;
 
-	for (const [i, rawLine] of raw.split(/\r?\n/).entries()) {
+	for (const [_i, rawLine] of raw.split(/\r?\n/).entries()) {
 		currentIndex += rawLine.length + 1; // +1 for \n
 		const line = rawLine.replace(/\n$/g, "");
 		const trimmedLine = line.trim();

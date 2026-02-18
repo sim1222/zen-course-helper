@@ -1,6 +1,6 @@
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useVirtualizer } from "@tanstack/react-virtual";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -15,7 +15,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { type subjectCategories } from "@/lib/syllabusConsts";
+import { type subjectCategories, TeachingMethod } from "@/lib/syllabusConsts";
 import { parseQuarter, syllabusUrl } from "@/lib/utils";
 import type { Attainment } from "@/stores/attainmentsStore";
 import type { Subject } from "@/types/apiTypes";
@@ -38,6 +38,7 @@ export default function SubjectChooser({
 	year,
 	quarter,
 	keyword,
+	teachingMethod,
 	setCart,
 }: {
 	subjects: Subject[];
@@ -47,6 +48,7 @@ export default function SubjectChooser({
 	year: number;
 	quarter: 1 | 2 | 3 | 4;
 	keyword: string;
+	teachingMethod: (keyof typeof TeachingMethod)[];
 	setCart: (cart: Subject[]) => void;
 }) {
 	const [filterThisQuarter, setFilterThisQuarter] = useState(true);
@@ -95,7 +97,12 @@ export default function SubjectChooser({
 							),
 					)
 					.filter((s) => !cart.find((c) => c.numbering === s.numbering))
-					.filter((s) => s.name.includes(keyword))
+					.filter((s) => s.name.toLowerCase().includes(keyword.toLowerCase()))
+					.filter((s) => {
+						if (teachingMethod.length === 0) return true;
+						const methods = teachingMethod.map((m) => TeachingMethod[m]);
+						return methods.includes(s.metadata.teachingMethod);
+					})
 			: [];
 	}, [
 		category,
@@ -105,6 +112,7 @@ export default function SubjectChooser({
 		quarter,
 		cart,
 		keyword,
+		teachingMethod,
 		filterThisQuarter,
 	]);
 
@@ -159,6 +167,7 @@ export default function SubjectChooser({
 				{subjects.length === 0 ? (
 					<div className="flex flex-wrap gap-4">
 						{Array.from({ length: 10 }).map((_, i) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: Skeletons are static and won't change, so using index as key is acceptable here.
 							<Skeleton className="w-full h-64 rounded-2xl" key={i} />
 						))}
 					</div>

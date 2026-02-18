@@ -12,11 +12,11 @@ import {
 	type Attainment,
 	useAttainmentsStore,
 } from "@/stores/attainmentsStore";
+import { useCartStore } from "@/stores/cartStore";
 import { useSubjectsStore } from "@/stores/subjectsStore";
 import type { Subject } from "@/types/apiTypes";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-import { useCartStore } from "@/stores/cartStore";
 
 function convertToAttainment(
 	subjects: Subject[],
@@ -97,7 +97,7 @@ export default function TranscriptParse({
 					</TableHeader>
 					<TableBody>
 						{attainments.map((course, index) => (
-							<TableRow key={index}>
+							<TableRow key={course.subject?.name ?? `${course.name}-${index}`}>
 								<TableCell>
 									{course.subject ? (
 										<svg

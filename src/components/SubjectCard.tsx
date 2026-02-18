@@ -1,7 +1,17 @@
+import { useMemo } from "react";
+import {
+	BsCalendarEvent,
+	BsClock,
+	BsMortarboard,
+	BsUiRadiosGrid,
+} from "react-icons/bs";
+import { FieldColors } from "@/lib/colors";
+import { parseCourseCode } from "@/lib/numberingParser";
 import { cn, parseQuarter, syllabusUrl } from "@/lib/utils";
 import type { Subject } from "@/types/apiTypes";
 import FacultyBadge from "./FacultyBadge";
 import LinkToExternal from "./LinkToExternal";
+import { QuarterIndicator } from "./QuarterIndicator";
 import TagBadge from "./TagBadge";
 import {
 	Card,
@@ -12,11 +22,6 @@ import {
 	CardTitle,
 } from "./ui/card";
 import { Separator } from "./ui/separator";
-import { parseCourseCode } from "@/lib/numberingParser";
-import { useMemo } from "react";
-import { QuarterIndicator } from "./QuarterIndicator";
-import { BsClock, BsMortarboard, BsCalendarEvent } from "react-icons/bs";
-import { FieldColors } from "@/lib/colors";
 
 export default function SubjectCard(props: {
 	subject: Subject;
@@ -70,6 +75,11 @@ export default function SubjectCard(props: {
 						<div className="flex items-center gap-1">
 							<BsCalendarEvent className="text-gray-500" />
 							<span>{subject.openingYear}年度</span>
+						</div>
+						<Separator orientation="vertical" className="h-full" />
+						<div className="flex items-center gap-1">
+							<BsUiRadiosGrid className="text-gray-500" />
+							<span>{subject.metadata.teachingMethod}</span>
 						</div>
 						<Separator orientation="vertical" className="h-full" />
 						<LinkToExternal href={syllabusUrl(subject)}>

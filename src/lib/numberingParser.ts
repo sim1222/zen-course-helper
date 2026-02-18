@@ -1,5 +1,5 @@
-import type { ValueOf } from "@/types/utilTypes";
 import z from "zod";
+import type { ValueOf } from "@/types/utilTypes";
 
 // ---------- 定義 / マスタ ----------
 export const FIELD = {

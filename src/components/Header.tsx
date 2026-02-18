@@ -1,6 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import type { Quarter } from "@/lib/numberingParser";
+import { cn, getAcademicYearByFormula, getQuarterByFormula } from "@/lib/utils";
 import { useAttainmentsStore } from "@/stores/attainmentsStore";
+import { useCurrentQuarterStore } from "@/stores/currentQuarterStore";
+import { useSubjectsStore } from "@/stores/subjectsStore";
 import seisekiImage from "../images/seiseki.png";
 import image from "../images/zenportal.png";
 import FetchAllSubject from "./FetchAllSubject";
@@ -15,24 +26,13 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "./ui/dialog";
-import { useCurrentQuarterStore } from "@/stores/currentQuarterStore";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import { useSubjectsStore } from "@/stores/subjectsStore";
-import type { Quarter } from "@/lib/numberingParser";
-import { cn, getAcademicYearByFormula, getQuarterByFormula } from "@/lib/utils";
 
 export default function Header() {
 	const attainmentsStore = useAttainmentsStore();
 	const currentQuarterStore = useCurrentQuarterStore();
 
-	const year = currentQuarterStore.Year;
-	const quarter = currentQuarterStore.Quarter;
+	const _year = currentQuarterStore.Year;
+	const _quarter = currentQuarterStore.Quarter;
 
 	const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -123,7 +123,7 @@ function YearSelector() {
 	const selectableYears = useMemo(() => {
 		const years = new Set<number>();
 		subjectsStore.subjects.forEach((subject) => {
-			years.add(parseInt(subject.openingYear));
+			years.add(parseInt(subject.openingYear, 10));
 		});
 		return Array.from(years).sort((a, b) => a - b);
 	}, [subjectsStore.subjects]);
@@ -140,7 +140,7 @@ function YearSelector() {
 		<Select
 			value={year.toString()}
 			onValueChange={(value) => {
-				currentQuarterStore.setYear(parseInt(value));
+				currentQuarterStore.setYear(parseInt(value, 10));
 			}}
 		>
 			<SelectTrigger className="w-fit">
@@ -176,7 +176,7 @@ function QuarterSelector() {
 		<Select
 			value={quarter.toString()}
 			onValueChange={(value) => {
-				currentQuarterStore.setQuarter(parseInt(value) as Quarter);
+				currentQuarterStore.setQuarter(parseInt(value, 10) as Quarter);
 			}}
 		>
 			<SelectTrigger className="w-fit">

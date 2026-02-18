@@ -31,7 +31,7 @@ export interface Subject {
 	metadata: Metadata;
 	coursePlans: CoursePlan[];
 	relatedSubjects: RelatedSubject[];
-	dayOfWeek: any[];
+	dayOfWeek: unknown[];
 	subjectCategoryIds: (typeof subjectCategories)[number]["id"][];
 	coursePatternIds: number[];
 }
@@ -78,11 +78,11 @@ interface BaseSubjectLink<TagType = Tag[]> {
 	tags: TagType;
 }
 
-export type PrerequisiteSubject = BaseSubjectLink<any[]>;
+export type PrerequisiteSubject = BaseSubjectLink<unknown[]>;
 
-export type PrerequisiteRecommendedSubject = BaseSubjectLink<any[]>;
+export type PrerequisiteRecommendedSubject = BaseSubjectLink<unknown[]>;
 
-export type NextRecommendedSubject = BaseSubjectLink<any[]>;
+export type NextRecommendedSubject = BaseSubjectLink<unknown[]>;
 
 export interface TextBook {
 	title: string;
@@ -95,7 +95,7 @@ export interface ReferenceBook {
 export interface CoursePlan {
 	title: string;
 	description: string;
-	sections: any[];
+	sections: unknown[];
 }
 
 export interface RelatedSubject extends BaseSubjectLink<Tag[]> {
