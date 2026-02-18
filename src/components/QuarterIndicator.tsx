@@ -20,7 +20,7 @@ function QuarterIndicator({
 				<span
 					key={q}
 					className={cn(
-						"flex items-center justify-center w-5 h-5 text-[10px] font-bold",
+						"flex items-center justify-center w-full h-full min-w-5 min-h-5 text-[12px] font-bold",
 						values.has(q) ? "bg-blue-800 text-white" : "bg-white text-gray-300",
 					)}
 				>

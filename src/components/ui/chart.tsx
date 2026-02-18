@@ -271,7 +271,7 @@ function ChartLegendContent({
 	return (
 		<div
 			className={cn(
-				"grid grid-cols-3 items-center justify-center",
+				"grid grid-cols-2 xl:grid-cols-3 items-center justify-center",
 				verticalAlign === "top" ? "pb-3" : "pt-3",
 				className,
 			)}

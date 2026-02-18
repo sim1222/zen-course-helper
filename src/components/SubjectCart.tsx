@@ -28,10 +28,11 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { syllabusUrl } from "@/lib/utils";
+import { parseQuarter, syllabusUrl } from "@/lib/utils";
 import type { Subject } from "@/types/apiTypes";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { QuarterIndicator } from "./QuarterIndicator";
 
 export function SubjectCart({
 	subjects,
@@ -41,7 +42,7 @@ export function SubjectCart({
 	setCart: (cart: Subject[]) => void;
 }) {
 	return (
-		<Card className="h-[calc(100%-32px)]">
+		<Card className="h-full border-0 lg:border lg:h-[calc(100%-32px)]">
 			<CardHeader>
 				<CardTitle>
 					カート{subjects.length > 0 ? ` (${subjects.length})` : ""}
@@ -87,7 +88,7 @@ export function SubjectCart({
 													</span>
 													<span>{subject.metadata.credit}</span>
 													<span>{subject.openingYear}</span>
-													<span>{subject.metadata.quarters}</span>
+													<QuarterIndicator values={new Set(parseQuarter(subject.metadata.quarters))} />
 												</div>
 											</Card>
 										</ContextMenuTrigger>

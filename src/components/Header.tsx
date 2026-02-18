@@ -26,10 +26,13 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "./ui/dialog";
+import { BsCart, BsCartCheckFill } from "react-icons/bs";
+import { useCartStore } from "@/stores/cartStore";
 
 export default function Header() {
 	const attainmentsStore = useAttainmentsStore();
 	const currentQuarterStore = useCurrentQuarterStore();
+	const cartStore = useCartStore();
 
 	const _year = currentQuarterStore.Year;
 	const _quarter = currentQuarterStore.Quarter;
@@ -146,7 +149,7 @@ function YearSelector() {
 			<SelectTrigger className="w-fit">
 				<SelectValue />
 			</SelectTrigger>
-			<SelectContent className="min-w-min">
+			<SelectContent className="min-w-min" position="popper">
 				{selectableYears.map((year) => (
 					<SelectItem
 						key={year}
@@ -182,7 +185,7 @@ function QuarterSelector() {
 			<SelectTrigger className="w-fit">
 				<SelectValue />
 			</SelectTrigger>
-			<SelectContent className="min-w-min">
+			<SelectContent className="min-w-min" position="popper">
 				{([1, 2, 3, 4] as Quarter[]).map((q) => (
 					<SelectItem
 						key={q}

@@ -77,11 +77,11 @@ export default function SubjectCard(props: {
 							<span>{subject.openingYear}年度</span>
 						</div>
 						<Separator orientation="vertical" className="h-full" />
-						<div className="flex items-center gap-1">
+						{/* <div className="flex items-center gap-1">
 							<BsUiRadiosGrid className="text-gray-500" />
 							<span>{subject.metadata.teachingMethod}</span>
 						</div>
-						<Separator orientation="vertical" className="h-full" />
+						<Separator orientation="vertical" className="h-full" /> */}
 						<LinkToExternal href={syllabusUrl(subject)}>
 							シラバスを開く
 						</LinkToExternal>

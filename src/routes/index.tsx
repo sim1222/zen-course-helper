@@ -1,8 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ShoppingCartIcon } from "lucide-react";
 import { useState } from "react";
 import LimitStatus from "@/components/LimitStatus";
 import { SubjectCart } from "@/components/SubjectCart";
 import SubjectChooser from "@/components/SubjectChooser";
+import { Button } from "@/components/ui/button";
+import {
+	Sheet,
+	SheetContent,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -46,7 +55,7 @@ function App() {
 		<div className="text-center">
 			<main className="flex flex-col items-center justify-center">
 				<div className="flex w-full h-[calc(100vh-3.5rem)] px-4 pt-4 gap-4">
-					<div className="w-135 shrink-0 flex flex-col gap-4">
+					<div className="w-100 lg:w-100 xl:w-135 shrink-0 flex flex-col gap-4">
 						<LimitStatus
 							passed={attainmentsStore.Attainments}
 							added={cartStore.Cart}
@@ -165,12 +174,38 @@ function App() {
 							teachingMethod={teachingMethod}
 						/>
 					</div>
-					<div className="w-80 shrink-0">
+					<div className="w-80 shrink-0 hidden 2xl:block">
+						{/* Desktop */}
 						<SubjectCart
 							subjects={cartStore.Cart}
 							setCart={cartStore.setCart}
 						/>
 					</div>
+				</div>
+
+				<div className="2xl:hidden fixed bottom-4 right-4 z-40">
+					{/* Mobile */}
+					<Sheet>
+						<SheetTrigger asChild>
+							<Button size="lg" className="rounded-full size-14 shadow-lg">
+								<ShoppingCartIcon className="size-6" />
+								{cartStore.Cart.length > 0 && (
+									<span className="absolute -top-1 -right-1 bg-destructive text-white text-xs rounded-full size-5 flex items-center justify-center">
+										{cartStore.Cart.length}
+									</span>
+								)}
+							</Button>
+						</SheetTrigger>
+						<SheetContent side="right" className="w-80 p-0">
+							<SheetHeader className="sr-only">
+								<SheetTitle>カート</SheetTitle>
+							</SheetHeader>
+							<SubjectCart
+								subjects={cartStore.Cart}
+								setCart={cartStore.setCart}
+							/>
+						</SheetContent>
+					</Sheet>
 				</div>
 			</main>
 		</div>
