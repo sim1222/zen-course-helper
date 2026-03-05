@@ -97,7 +97,17 @@ export default function SubjectChooser({
 							),
 					)
 					.filter((s) => !cart.find((c) => c.numbering === s.numbering))
-					.filter((s) => s.name.toLowerCase().includes(keyword.toLowerCase()))
+					.filter((s) => {
+						return [
+							s.name,
+							s.description,
+							...s.tags.map((t) => t.name),
+							...s.faculty.map((f) => f.name),
+						]
+							.join(" ")
+							.toLocaleLowerCase()
+							.includes(keyword.toLowerCase());
+					})
 					.filter((s) => {
 						if (teachingMethod.length === 0) return true;
 						const methods = teachingMethod.map((m) => TeachingMethod[m]);

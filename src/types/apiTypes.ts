@@ -36,6 +36,9 @@ export interface Subject {
 	coursePatternIds: number[];
 }
 
+/**
+ * 講師の情報
+ */
 export interface Faculty {
 	id: number; // 999
 	name: string; // 順次公開予定
