@@ -34,10 +34,7 @@ export const Route = createFileRoute("/")({
 });
 
 function App() {
-	const [selectedCategory, setSelectedCategory] = useState<
-		(typeof subjectCategories)[number]["id"][]
-	>(subjectCategories.map((c) => c.id));
-
+	
 	const attainmentsStore = useAttainmentsStore();
 	const allSubjectsStore = useSubjectsStore();
 	const cartStore = useCartStore();
@@ -46,10 +43,15 @@ function App() {
 	const year = currentQuarterStore.Year;
 	const quarter = currentQuarterStore.Quarter as 1 | 2 | 3 | 4;
 
-	const [keyword, setKeyword] = useState("");
+	const [selectedCategory, setSelectedCategory] = useState<
+	(typeof subjectCategories)[number]["id"][]
+	>([]);
+
 	const [teachingMethod, setTeachingMethod] = useState<
-		(keyof typeof TeachingMethod)[]
-	>(Object.keys(TeachingMethod) as (keyof typeof TeachingMethod)[]);
+	(keyof typeof TeachingMethod)[]
+	>([]);
+
+	const [keyword, setKeyword] = useState("");
 
 	return (
 		<div className="text-center">
