@@ -140,7 +140,7 @@ export default function SubjectChooser({
 	});
 
 	return (
-		<Card className="h-[calc(100%-32px)]">
+		<Card className="h-full">
 			<CardHeader>
 				<div className="flex justify-between items-center w-full">
 					<div className="flex-1 text-sm text-gray-500">
@@ -172,7 +172,7 @@ export default function SubjectChooser({
 			</CardHeader>
 			<CardContent
 				ref={parentRef}
-				className="h-full p-4 overflow-auto scroll-contain"
+				className="h-full px-4 overflow-auto scroll-contain"
 			>
 				{subjects.length === 0 ? (
 					<div className="flex flex-wrap gap-4">

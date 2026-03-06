@@ -42,7 +42,7 @@ export function SubjectCart({
 	setCart: (cart: Subject[]) => void;
 }) {
 	return (
-		<Card className="h-full border-0 lg:border lg:h-[calc(100%-32px)]">
+		<Card className="h-full border-0 lg:border lg:h-full">
 			<CardHeader>
 				<CardTitle>
 					カート{subjects.length > 0 ? ` (${subjects.length})` : ""}
