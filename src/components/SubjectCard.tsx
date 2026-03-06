@@ -3,7 +3,6 @@ import {
 	BsCalendarEvent,
 	BsClock,
 	BsMortarboard,
-	BsUiRadiosGrid,
 } from "react-icons/bs";
 import { FieldColors } from "@/lib/colors";
 import { parseCourseCode } from "@/lib/numberingParser";
@@ -82,7 +81,10 @@ export default function SubjectCard(props: {
 							<span>{subject.metadata.teachingMethod}</span>
 						</div>
 						<Separator orientation="vertical" className="h-full" /> */}
-						<LinkToExternal href={syllabusUrl(subject)}>
+						<LinkToExternal
+							href={syllabusUrl(subject)}
+							onClick={(e) => e.stopPropagation()}
+						>
 							シラバスを開く
 						</LinkToExternal>
 					</div>

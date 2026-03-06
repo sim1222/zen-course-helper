@@ -241,8 +241,14 @@ export default function SubjectChooser({
 																		/>
 																	</button>
 																</ContextMenuTrigger>
-																<ContextMenuContent>
-																	<ContextMenuLabel>
+																<ContextMenuContent
+																	onClick={(e) => e.stopPropagation()}
+																	onPointerDown={(e) => e.stopPropagation()}
+																	onPointerUp={(e) => e.stopPropagation()}
+																>
+																	<ContextMenuLabel
+																		onClick={(e) => e.stopPropagation()}
+																	>
 																		{subject.name} ({subject.numbering})
 																	</ContextMenuLabel>
 																	<ContextMenuSeparator />
@@ -255,9 +261,6 @@ export default function SubjectChooser({
 																		}}
 																	>
 																		追加
-																		<ContextMenuShortcut>
-																			Enter
-																		</ContextMenuShortcut>
 																	</ContextMenuItem>
 																	<ContextMenuItem
 																		onSelect={() => {
@@ -268,9 +271,6 @@ export default function SubjectChooser({
 																		}}
 																	>
 																		シラバスを開く
-																		<ContextMenuShortcut>
-																			Ctrl+Open
-																		</ContextMenuShortcut>
 																	</ContextMenuItem>
 																</ContextMenuContent>
 															</ContextMenu>
@@ -300,8 +300,14 @@ export default function SubjectChooser({
 													<ContextMenuTrigger className="flex-1 min-w-0">
 														<SubjectCard subject={subject} />
 													</ContextMenuTrigger>
-													<ContextMenuContent>
-														<ContextMenuLabel>
+													<ContextMenuContent
+														onClick={(e) => e.stopPropagation()}
+														onPointerDown={(e) => e.stopPropagation()}
+														onPointerUp={(e) => e.stopPropagation()}
+													>
+														<ContextMenuLabel
+															onClick={(e) => e.stopPropagation()}
+														>
 															{subject.name} ({subject.numbering})
 														</ContextMenuLabel>
 														<ContextMenuSeparator />
