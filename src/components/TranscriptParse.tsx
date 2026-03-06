@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { forwardRef, useMemo, useRef, useState } from "react";
 import {
 	Table,
 	TableBody,
@@ -32,11 +32,12 @@ function convertToAttainment(
 	return attainments;
 }
 
-export default function TranscriptParse({
-	setDialogOpen,
-}: {
-	setDialogOpen: (open: boolean) => void;
-}) {
+const TranscriptParse = forwardRef<
+	HTMLTextAreaElement,
+	{
+		setDialogOpen: (open: boolean) => void;
+	}
+>(({ setDialogOpen }, ref) => {
 	const [value, setValue] = useState("");
 
 	const attainmentsStore = useAttainmentsStore();
@@ -63,6 +64,7 @@ export default function TranscriptParse({
 	return (
 		<div className="w-full overflow-auto flex flex-col gap-4">
 			<Textarea
+				ref={ref}
 				value={value}
 				onChange={(e) => setValue(e.target.value)}
 				onBlur={(e) => {
@@ -155,4 +157,8 @@ export default function TranscriptParse({
 			</Button>
 		</div>
 	);
-}
+});
+
+TranscriptParse.displayName = "TranscriptParse";
+
+export default TranscriptParse;

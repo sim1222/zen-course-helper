@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
 	Select,
 	SelectContent,
@@ -56,58 +56,12 @@ export default function Header() {
 				</div>
 				<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
 					<DialogTrigger asChild>
-						<Button>
+						<Button variant={attainmentsStore.Attainments.length ? "outline" : "default"}>
 							履修状況を{attainmentsStore.Attainments.length ? "再" : ""}
 							インポート
 						</Button>
 					</DialogTrigger>
-					<DialogContent className="sm:max-w-4xl max-h-[95vh] overflow-auto">
-						<DialogHeader>
-							<DialogTitle>成績情報をインポート</DialogTitle>
-							<DialogDescription>
-								PCブラウザで
-								<LinkToExternal href="https://portal.zen.ac.jp/uprx/ShibbolethAuthServlet">
-									ZEN Portal
-								</LinkToExternal>
-								を開き、成績→成績照会に行き、Ctrl+Aで全選択、Ctrl+Cでコピーしてから、下のテキストエリアに貼り付けてください。
-							</DialogDescription>
-						</DialogHeader>
-						<div className="flex gap-4 justify-center items-center">
-							<img src={seisekiImage} alt="ZEN Portal" className="block h-32" />
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								fill="currentColor"
-								className="bi bi-arrow-right"
-								viewBox="0 0 16 16"
-							>
-								<title>arrow-right</title>
-								<path
-									fillRule="evenodd"
-									d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-								/>
-							</svg>
-							<p>Ctrl + A</p>
-							<img src={image} alt="ZEN Portal" className="block h-32" />
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								fill="currentColor"
-								className="bi bi-arrow-right"
-								viewBox="0 0 16 16"
-							>
-								<title>arrow-right</title>
-								<path
-									fillRule="evenodd"
-									d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-								/>
-							</svg>
-							<p>Ctrl + C</p>
-						</div>
-						<TranscriptParse setDialogOpen={setDialogOpen} />
-					</DialogContent>
+					<TranscriptImportDialogContent setDialogOpen={setDialogOpen} />
 				</Dialog>
 			</nav>
 			<div className="flex items-center gap-2">
@@ -116,6 +70,67 @@ export default function Header() {
 				</LinkToExternal>
 			</div>
 		</header>
+	);
+}
+
+function TranscriptImportDialogContent({
+	setDialogOpen,
+}: {
+	setDialogOpen: (open: boolean) => void;
+}) {
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+	return (
+		<DialogContent className="sm:max-w-4xl max-h-[95vh] overflow-auto">
+			<DialogHeader>
+				<DialogTitle>成績情報をインポート</DialogTitle>
+				<DialogDescription>
+					PCブラウザで
+					<LinkToExternal
+						href="https://portal.zen.ac.jp/uprx/ShibbolethAuthServlet"
+						onClick={() => textareaRef.current?.focus()}
+					>
+						ZEN Portal
+					</LinkToExternal>
+					を開き、成績→成績照会に行き、Ctrl+Aで全選択、Ctrl+Cでコピーしてから、下のテキストエリアに貼り付けてください。
+				</DialogDescription>
+			</DialogHeader>
+			<div className="flex gap-4 justify-center items-center">
+				<img src={seisekiImage} alt="ZEN Portal" className="block h-32" />
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					fill="currentColor"
+					className="bi bi-arrow-right"
+					viewBox="0 0 16 16"
+				>
+					<title>arrow-right</title>
+					<path
+						fillRule="evenodd"
+						d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+					/>
+				</svg>
+				<p>Ctrl + A</p>
+				<img src={image} alt="ZEN Portal" className="block h-32" />
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					fill="currentColor"
+					className="bi bi-arrow-right"
+					viewBox="0 0 16 16"
+				>
+					<title>arrow-right</title>
+					<path
+						fillRule="evenodd"
+						d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+					/>
+				</svg>
+				<p>Ctrl + C</p>
+			</div>
+			<TranscriptParse ref={textareaRef} setDialogOpen={setDialogOpen} />
+		</DialogContent>
 	);
 }
 
