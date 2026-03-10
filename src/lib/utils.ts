@@ -8,6 +8,11 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
+/**
+ * Quarter offset in month
+ */
+export const DEFAULT_QUARTER_OFFSET = 1;
+
 /*
 	Q1: 4,5,6
 	Q2: 7,8,9
@@ -15,10 +20,10 @@ export function cn(...inputs: ClassValue[]) {
 	Q4: 1,2,3
   */
 export function getQuarterByFormula(date: Date): 1 | 2 | 3 | 4 {
-	const month = date.getMonth() + 1;
-	// 4月始まりにしたいので (month + 8) % 12 でシフト
-	return (Math.floor(((month + 8) % 12) / 3) + 1) as 1 | 2 | 3 | 4;
-}
+		const month = date.getMonth() + 1;
+		// 4月始まりにしたいので (month + 8) % 12 でシフト
+		return (Math.floor(((month + 8) % 12) / 3) + 1) as 1 | 2 | 3 | 4;
+	}
 
 export function getAcademicYearByFormula(date: Date): number {
 	const month = date.getMonth() + 1;

@@ -1,5 +1,9 @@
 import { create } from "zustand";
-import { getAcademicYearByFormula, getQuarterByFormula } from "@/lib/utils";
+import {
+	DEFAULT_QUARTER_OFFSET,
+	getAcademicYearByFormula,
+	getQuarterByFormula,
+} from "@/lib/utils";
 
 interface currentQuarterState {
 	Year: number;
@@ -8,9 +12,14 @@ interface currentQuarterState {
 	setQuarter: (quarter: number) => void;
 }
 
-export const useCurrentQuarterStore = create<currentQuarterState>((set) => ({
-	Year: getAcademicYearByFormula(new Date()),
-	Quarter: getQuarterByFormula(new Date()),
-	setYear: (year: number) => set(() => ({ Year: year })),
-	setQuarter: (quarter: number) => set(() => ({ Quarter: quarter })),
-}));
+export const useCurrentQuarterStore = create<currentQuarterState>((set) => {
+	const currentDate = new Date();
+	currentDate.setMonth(currentDate.getMonth() + DEFAULT_QUARTER_OFFSET);
+
+	return {
+		Year: getAcademicYearByFormula(currentDate),
+		Quarter: getQuarterByFormula(currentDate),
+		setYear: (year: number) => set(() => ({ Year: year })),
+		setQuarter: (quarter: number) => set(() => ({ Quarter: quarter })),
+	};
+});
