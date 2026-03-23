@@ -80,7 +80,7 @@ export default function SubjectChooser({
 							s.subjectCategoryIds.some((c) => category.includes(c)),
 					)
 					.filter(
-						(s) => !filterThisQuarter || s.openingYear === year.toString(),
+						(s) => !filterThisQuarter || parseInt(s.openingYear, 10) <= year
 					)
 					.filter(
 						(s) =>

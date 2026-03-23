@@ -73,7 +73,7 @@ export default function SubjectCard(props: {
 						<Separator orientation="vertical" className="h-full" />
 						<div className="flex items-center gap-1">
 							<BsCalendarEvent className="text-gray-500" />
-							<span>{subject.openingYear}年度</span>
+							<span>{subject.openingYear}年度〜</span>
 						</div>
 						<Separator orientation="vertical" className="h-full" />
 						{/* <div className="flex items-center gap-1">
