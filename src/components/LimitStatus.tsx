@@ -215,10 +215,12 @@ export default function LimitStatus(props: {
 		const countById = (
 			subjectCategoryId: (typeof subjectCategories)[number]["id"],
 			filterBasic: boolean = false,
+			filterWithoutBasic: boolean = false,
 		) => {
 			return mergedSubjects
 				.filter((s) => s.subjectCategoryIds.includes(subjectCategoryId))
 				.filter((s) => (filterBasic ? s.numbering.startsWith("BSC") : true))
+				.filter((s) => (filterWithoutBasic ? !s.numbering.startsWith("BSC") : true))
 				.reduce((a, c) => a + (parseInt(c.metadata.credit, 10) ?? 0), 0);
 		};
 
@@ -241,18 +243,20 @@ export default function LimitStatus(props: {
 			{
 				// 基盤リテラシー科目から、2.「基礎科目」の履修も合わせ８単位以上修得すること。
 				basic_literacy_subjects:
-					countById("applied_informatics") + countById("mathematical_sciences"),
+					countById("applied_informatics", false, true) + countById("mathematical_sciences", false, true),
 				multilingual_information_understanding_subjects: countById(
 					"multilingual_information_understanding",
+					false,
+					true
 				),
 				world_understanding_subjects:
-					countById("culture_and_thoughts") +
-					countById("society_and_networks") +
-					countById("economy_and_markets") +
-					countById("digital_industry"),
+					countById("culture_and_thoughts", false, true) +
+					countById("society_and_networks", false, true) +
+					countById("economy_and_markets", false, true) +
+					countById("digital_industry", false, true),
 				social_connection_subjects: Math.min(
 					10,
-					countById("social_connection"),
+					countById("social_connection", false, true),
 				),
 			},
 		];
