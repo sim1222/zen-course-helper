@@ -29,7 +29,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { parseQuarter, syllabusUrl } from "@/lib/utils";
-import type { Subject } from "@/types/apiTypes";
+import type { Metadata, Subject } from "@/types/apiTypes";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { QuarterIndicator } from "./QuarterIndicator";
@@ -143,22 +143,25 @@ export function SubjectCart({
 							<DialogTitle>登録内容</DialogTitle>
 						</DialogHeader>
 						{Object.entries(
-							Object.groupBy(
-								subjects.filter(
-									(s) => s.metadata.teachingMethod !== "ライブ映像科目",
-								),
-								(s) => s.openingYear,
+							Object.groupBy(subjects, (s) =>
+								s.metadata.quarters.join(", "),
 							),
-						).map(([year, subjectsInYear]) => (
-							<div key={year} className="mb-4 w-full">
+						).map(([quarters, subjectsInQuarter]) => (
+							<div key={quarters} className="mb-4 w-full">
 								{Object.entries(
-									Object.groupBy(subjectsInYear ?? [], (s) =>
-										s.metadata.quarters.join(", "),
+									Object.groupBy(
+										subjectsInQuarter ?? [],
+										(s) => s.metadata.teachingMethod,
 									),
-								).map(([quarters, subjectsInQuarter]) => (
-									<div key={quarters} className="mb-2 ml-4 ">
+								).sort(([a], [b]) => {
+									const order: Metadata["teachingMethod"][] = ["オンデマンド科目", "ライブ映像科目", "演習科目", "ゼミ"];
+									const idxA = order.indexOf(a as Metadata["teachingMethod"]);
+									const idxB = order.indexOf(b as Metadata["teachingMethod"]);
+									return (idxA === -1 ? order.length : idxA) - (idxB === -1 ? order.length : idxB);
+								}).map(([teachingMethod, subjectsInMethod]) => (
+									<div key={teachingMethod} className="mb-2 ml-4">
 										<h3 className="font-semibold text-md mb-1">
-											{year}年度 {quarters}
+											{quarters}（{teachingMethod}）
 										</h3>
 										<Table>
 											<TableHeader>
@@ -167,69 +170,20 @@ export function SubjectCart({
 													<TableHead className="w-[200px] max-w-[200px]">
 														教員氏名
 													</TableHead>
-													<TableHead className="w-[120px]">教室</TableHead>
 													<TableHead className="w-[100px] text-right">
 														単位数
 													</TableHead>
 												</TableRow>
 											</TableHeader>
 											<TableBody>
-												{subjectsInQuarter?.map((s) => (
+												{subjectsInMethod?.map((s) => (
 													<TableRow key={s.numbering}>
 														<TableCell>{s.name}</TableCell>
 														<TableCell className="truncate max-w-[200px]">
 															{s.faculty.map((f) => f.name).join(", ")}
-														</TableCell>
-														<TableCell>
-															{s.metadata.teachingMethod.replace("科目", "")}
 														</TableCell>
 														<TableCell className="text-right">
 															{s.metadata.credit.replace("単位", "")}
-														</TableCell>
-													</TableRow>
-												))}
-											</TableBody>
-										</Table>
-									</div>
-								))}
-							</div>
-						))}
-
-						{Object.entries(
-							Object.groupBy(
-								subjects.filter(
-									(s) => s.metadata.teachingMethod === "ライブ映像科目",
-								),
-								(s) => s.openingYear,
-							),
-						).map(([year, subjectsInYear]) => (
-							<div key={year} className="mb-4">
-								{Object.entries(
-									Object.groupBy(subjectsInYear ?? [], (s) =>
-										s.metadata.quarters.join(", "),
-									),
-								).map(([quarters, subjectsInQuarter]) => (
-									<div key={quarters} className="mb-2 ml-4">
-										<h3 className="font-semibold text-md mb-1">
-											{year}年度 {quarters}（ライブ映像科目）
-										</h3>
-										<Table>
-											<TableHeader>
-												<TableRow>
-													<TableHead className="w-[300px]">授業科目</TableHead>
-													<TableHead>教員氏名</TableHead>
-													<TableHead className="text-right">単位数</TableHead>
-												</TableRow>
-											</TableHeader>
-											<TableBody>
-												{subjectsInQuarter?.map((s) => (
-													<TableRow key={s.numbering}>
-														<TableCell>{s.name}</TableCell>
-														<TableCell className="truncate max-w-[200px]">
-															{s.faculty.map((f) => f.name).join(", ")}
-														</TableCell>
-														<TableCell className="text-right">
-															{s.metadata.credit}
 														</TableCell>
 													</TableRow>
 												))}
