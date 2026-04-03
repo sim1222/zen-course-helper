@@ -46,7 +46,7 @@ export function SubjectCart({
 		<Card className="h-full border-0 lg:border lg:h-full">
 			<CardHeader>
 				<CardTitle>
-					カート{subjects.length > 0 ? ` (${subjects.length})` : ""}
+					カート{subjects.length > 0 ? ` (${subjects.length}科目 ${subjects.reduce((acc, s) => acc + Number(s.metadata.credit.replace("単位", "")), 0)}単位)` : ""}
 				</CardTitle>
 			</CardHeader>
 			<CardContent className="h-full p-2 pb-0 overflow-auto flex flex-col">
@@ -145,7 +145,7 @@ export function SubjectCart({
 					</DialogTrigger>
 					<DialogContent className="sm:max-w-4xl">
 						<DialogHeader>
-							<DialogTitle>登録内容</DialogTitle>
+							<DialogTitle>登録内容 計 {subjects.reduce((acc, s) => acc + Number(s.metadata.credit.replace("単位", "")), 0)} 単位</DialogTitle>
 						</DialogHeader>
 						{Object.entries(
 							Object.groupBy(subjects, (s) =>
