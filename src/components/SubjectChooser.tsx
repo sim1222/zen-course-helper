@@ -29,6 +29,7 @@ import {
 } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
 import { Toggle } from "./ui/toggle";
+import LinkToExternal from "./LinkToExternal";
 
 export default function SubjectChooser({
 	subjects,
@@ -143,9 +144,15 @@ export default function SubjectChooser({
 		<Card className="h-full">
 			<CardHeader>
 				<div className="flex justify-between items-center w-full">
-					<div className="flex-1 text-sm text-gray-500">
-						クリックで追加・削除 右クリックでメニュー
+					<div className="flex-1">
+						<div className="text-sm text-gray-500">
+							クリックで追加・削除 右クリックでメニュー
+						</div>
+						<LinkToExternal href="https://sites.google.com/zen.ac.jp/zen-gakuseibinran/about/curriculum-tree">
+							カリキュラムツリー
+						</LinkToExternal>
 					</div>
+
 					<div className="text-center">
 						<CardTitle>科目検索</CardTitle>
 						<CardDescription className="flex gap-2 justify-between w-32">
