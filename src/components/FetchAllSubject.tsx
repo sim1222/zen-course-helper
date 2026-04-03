@@ -7,8 +7,8 @@ import type {
 } from "@/workers/fetchSubjectsWorker.types";
 import { Spinner } from "./ui/spinner";
 
-// 1 week
-const FETCH_INTERVAL = 1000 * 60 * 60 * 24 * 7;
+// 1 day
+const FETCH_INTERVAL = 1000 * 60 * 60 * 24;
 
 export default function FetchAllSubject() {
 	const workerRef = useRef<Worker | null>(null);
