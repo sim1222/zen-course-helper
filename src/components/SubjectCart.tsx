@@ -28,6 +28,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { FIELD_KEYS } from "@/lib/numberingParser";
 import { parseQuarter, syllabusUrl } from "@/lib/utils";
 import type { Subject } from "@/types/apiTypes";
 import { LiveTimetable } from "./LiveTimetable";
@@ -194,7 +195,14 @@ export function SubjectCart({
 															</TableRow>
 														</TableHeader>
 														<TableBody>
-															{subjectsInMethod?.map((s) => (
+															{[...(subjectsInMethod ?? [])].sort((a, b) => {
+																const ap = a.numbering.split("-");
+																const bp = b.numbering.split("-");
+																const ai = FIELD_KEYS.indexOf(ap[0] as typeof FIELD_KEYS[number]);
+																const bi = FIELD_KEYS.indexOf(bp[0] as typeof FIELD_KEYS[number]);
+																if (ai !== bi) return ai - bi;
+																return ap.slice(1).join("-").localeCompare(bp.slice(1).join("-"));
+															}).map((s) => (
 																<TableRow key={s.numbering}>
 																	<TableCell>{s.name}</TableCell>
 																	<TableCell className="truncate max-w-[200px]">
