@@ -29,10 +29,11 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { parseQuarter, syllabusUrl } from "@/lib/utils";
-import type { Metadata, Subject } from "@/types/apiTypes";
+import type { Subject } from "@/types/apiTypes";
+import { LiveTimetable } from "./LiveTimetable";
+import { QuarterIndicator } from "./QuarterIndicator";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { QuarterIndicator } from "./QuarterIndicator";
 
 export function SubjectCart({
 	subjects,
@@ -88,7 +89,11 @@ export function SubjectCart({
 													</span>
 													<span>{subject.metadata.credit}</span>
 													<span>{subject.openingYear}</span>
-													<QuarterIndicator values={new Set(parseQuarter(subject.metadata.quarters))} />
+													<QuarterIndicator
+														values={
+															new Set(parseQuarter(subject.metadata.quarters))
+														}
+													/>
 												</div>
 											</Card>
 										</ContextMenuTrigger>
@@ -144,55 +149,69 @@ export function SubjectCart({
 						</DialogHeader>
 						{Object.entries(
 							Object.groupBy(subjects, (s) =>
-								s.metadata.quarters.join(", "),
+								s.metadata.teachingMethod === "ライブ映像科目"
+									? ""
+									: s.metadata.quarters.join(", "),
 							),
-						).map(([quarters, subjectsInQuarter]) => (
-							<div key={quarters} className="mb-4 w-full">
-								{Object.entries(
-									Object.groupBy(
-										subjectsInQuarter ?? [],
-										(s) => s.metadata.teachingMethod,
-									),
-								).sort(([a], [b]) => {
-									const order: Metadata["teachingMethod"][] = ["オンデマンド科目", "ライブ映像科目", "演習科目", "ゼミ"];
-									const idxA = order.indexOf(a as Metadata["teachingMethod"]);
-									const idxB = order.indexOf(b as Metadata["teachingMethod"]);
-									return (idxA === -1 ? order.length : idxA) - (idxB === -1 ? order.length : idxB);
-								}).map(([teachingMethod, subjectsInMethod]) => (
-									<div key={teachingMethod} className="mb-2 ml-4">
-										<h3 className="font-semibold text-md mb-1">
-											{quarters}（{teachingMethod}）
-										</h3>
-										<Table>
-											<TableHeader>
-												<TableRow>
-													<TableHead className="w-[300px]">授業科目</TableHead>
-													<TableHead className="w-[200px] max-w-[200px]">
-														教員氏名
-													</TableHead>
-													<TableHead className="w-[100px] text-right">
-														単位数
-													</TableHead>
-												</TableRow>
-											</TableHeader>
-											<TableBody>
-												{subjectsInMethod?.map((s) => (
-													<TableRow key={s.numbering}>
-														<TableCell>{s.name}</TableCell>
-														<TableCell className="truncate max-w-[200px]">
-															{s.faculty.map((f) => f.name).join(", ")}
-														</TableCell>
-														<TableCell className="text-right">
-															{s.metadata.credit.replace("単位", "")}
-														</TableCell>
-													</TableRow>
-												))}
-											</TableBody>
-										</Table>
-									</div>
-								))}
-							</div>
-						))}
+						)
+							.sort(([a], [b]) => {
+								if (a === "") return 1;
+								if (b === "") return -1;
+								const firstNum = (s: string) =>
+									Number.parseInt(s.match(/\d+/)?.[0] ?? "0", 10);
+								return firstNum(a) - firstNum(b);
+							})
+							.map(([quarters, subjectsInQuarter]) => (
+								<div key={quarters} className="mb-4 w-full">
+									{Object.entries(
+										Object.groupBy(
+											subjectsInQuarter ?? [],
+											(s) => s.metadata.teachingMethod,
+										),
+									)
+										.map(([teachingMethod, subjectsInMethod]) => (
+											<div key={teachingMethod} className="mb-2 ml-4">
+												<h3 className="font-semibold text-md mb-1">
+													{quarters
+														? `${quarters}（${teachingMethod}）`
+														: teachingMethod}
+												</h3>
+												{teachingMethod === "ライブ映像科目" ? (
+													<LiveTimetable subjects={subjectsInMethod ?? []} />
+												) : (
+													<Table>
+														<TableHeader>
+															<TableRow>
+																<TableHead className="w-[300px]">
+																	授業科目
+																</TableHead>
+																<TableHead className="w-[200px] max-w-[200px]">
+																	教員氏名
+																</TableHead>
+																<TableHead className="w-[100px] text-right">
+																	単位数
+																</TableHead>
+															</TableRow>
+														</TableHeader>
+														<TableBody>
+															{subjectsInMethod?.map((s) => (
+																<TableRow key={s.numbering}>
+																	<TableCell>{s.name}</TableCell>
+																	<TableCell className="truncate max-w-[200px]">
+																		{s.faculty.map((f) => f.name).join(", ")}
+																	</TableCell>
+																	<TableCell className="text-right">
+																		{s.metadata.credit.replace("単位", "")}
+																	</TableCell>
+																</TableRow>
+															))}
+														</TableBody>
+													</Table>
+												)}
+											</div>
+										))}
+								</div>
+							))}
 					</DialogContent>
 				</Dialog>
 			</CardContent>

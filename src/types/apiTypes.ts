@@ -96,9 +96,15 @@ export interface ReferenceBook {
 }
 
 export interface CoursePlan {
+	date: CoursePlanDate | undefined;
 	title: string;
 	description: string;
 	sections: unknown[];
+}
+
+export interface CoursePlanDate {
+	type: "free" | string;
+	value: string; // "2026/04/20 / 2限(11:15-12:45)", "学生便覧参照" など
 }
 
 export interface RelatedSubject extends BaseSubjectLink<Tag[]> {
